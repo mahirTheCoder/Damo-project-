@@ -13,7 +13,6 @@ const signUp = async (req, res) => {
         .status(400)
         .send("Password is required and must be at least 6 characters long");
 
-
     // --------existing user
     const existingUser = await userSchema.findOne({ email });
     if (existingUser)
@@ -21,7 +20,6 @@ const signUp = async (req, res) => {
 
     // --------------otp generate
     const otp = generateOTP();
-
 
     // ----------data base save
     const user = await userSchema.create({
@@ -32,19 +30,43 @@ const signUp = async (req, res) => {
       otpExpires: Date.now() + 2 * 60 * 1000,
     });
 
-
     // ---------send otp to user mail
     await mailSender({
       email,
       subject: "Otp Verifications ",
       otp,
     });
-    res.status(200).send('SignUp Successfully')
+    res.status(200).send("SignUp Successfully");
   } catch (err) {
     console.log(err);
     return res.status(500).send("Server error");
   }
 };
 
+const verifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
 
-module.exports = {signUp}
+  try {
+    const user = await userSchema.findOne({
+      email,
+      otp,
+      otpExpires: { $gt: Date.now() },
+      isVerified: false,
+    });
+    if (!user) return res.status(400).send("Invalid OTP or User not found");
+    // -------after validations
+    user.isVerified = true;
+    user.otp = null;
+    user.otpExpires = null;
+    user.otpverify = true;
+    // ----------data abse save data
+    await user.save();
+
+    res.status(200).send("OTP verified successfully");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server error ");
+  }
+};
+
+module.exports = { signUp, verifyOtp };
