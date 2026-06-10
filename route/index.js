@@ -1,13 +1,13 @@
  const express = require('express')
- const route = express.Router()
+ const router = express.Router()
  const authRouter = require('./authRouter')
 
 
+ router.use('/auth', authRouter)
  
- route.get('/', (req, res) => {
-   res.status(200).send('Hello World!')
- })
+//  route.get('/', (req, res) => {
+//    res.status(200).send('Hello World!')
+//  })
 
- route.use('/auth', authRouter)
  
- module.exports = route
+ module.exports = router
