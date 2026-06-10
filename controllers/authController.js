@@ -2,6 +2,7 @@ const { mailSender } = require("../helpers/mailService");
 const { generateOTP, isValidEmail } = require("../helpers/utils");
 const userSchema = require("../models/userSchema");
 
+// -----------signUp Controler
 const signUp = async (req, res) => {
   const { fullname, email, password } = req.body;
   try {
@@ -27,7 +28,7 @@ const signUp = async (req, res) => {
       email,
       password,
       otp,
-      otpExpires: Date.now() + 2 * 60 * 1000,
+      otpExpires: Date.now() + 5 * 60 * 1000,
     });
 
     // ---------send otp to user mail
@@ -43,6 +44,7 @@ const signUp = async (req, res) => {
   }
 };
 
+// ----------veriFy Otp controller
 const verifyOtp = async (req, res) => {
   const { email, otp } = req.body;
 
@@ -58,7 +60,6 @@ const verifyOtp = async (req, res) => {
     user.isVerified = true;
     user.otp = null;
     user.otpExpires = null;
-    user.otpverify = true;
     // ----------data abse save data
     await user.save();
 
@@ -69,4 +70,38 @@ const verifyOtp = async (req, res) => {
   }
 };
 
-module.exports = { signUp, verifyOtp };
+// --------reSend otp controller
+const reSendOtp = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await userSchema.findOne({
+      email,
+      isVerified: false,
+    });
+
+    if (!user) return res.status(400).send("inavlid request");
+
+    // ----------otp generator
+    const otp = generateOTP();
+    user.otp = otp;
+    user.otpExpires = Date.now() + 5 * 60 * 1000;
+
+    // ---------send otp to user mail
+    await mailSender({
+      email,
+      subject: "Otp Verifications ",
+      otp,
+    });
+
+    // ---------save data base stor
+    await useReducer.save();
+
+    res.status(200).send("reSendOtp Successfully");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server Error");
+  }
+};
+
+module.exports = { signUp, verifyOtp, reSendOtp };
