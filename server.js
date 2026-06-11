@@ -22,6 +22,7 @@
 const express = require('express');
 const route = require('./route');
 const dbConfig = require('./configs/dbConfig');
+const cookieParser = require('cookie-parser');
 
 require('dotenv').config();
 
@@ -29,6 +30,7 @@ const app = express();
 
 app.use(express.json());
 app.use(route);
+app.use(cookieParser)
 
 dbConfig();
 

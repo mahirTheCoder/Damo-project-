@@ -95,7 +95,7 @@ const reSendOtp = async (req, res) => {
     });
 
     // ---------save data base stor
-    await useReducer.save();
+    await user.save();
 
     res.status(200).send("reSendOtp Successfully");
   } catch (error) {
@@ -103,5 +103,16 @@ const reSendOtp = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
+
+
+// ---------cookie configs 
+ const cookieConfig = {
+   httpOnly: true,                 // Prevents client-side JS/XSS attacks
+   secure: true,                   // Ensures cookie is sent only over HTTPS
+   maxAge: 1000 * 60 * 60 * 24 * 7, // Expires in 7 days (in milliseconds)
+    };
+
+
+    
 
 module.exports = { signUp, verifyOtp, reSendOtp };
