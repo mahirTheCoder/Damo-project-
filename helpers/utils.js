@@ -14,8 +14,7 @@ const generateOTP = () => {
 };
 
 
-//  Access Token Generate
-
+//-------Access Token Generate
 const generateAccessToken = (user) => {
   return jwt.sign(
     {
@@ -43,4 +42,4 @@ const generateRefreshToken = (user) => {
 };
 
 
-module.exports = {isValidEmail , generateOTP}
+module.exports = {isValidEmail , generateOTP , generateAccessToken , generateRefreshToken}

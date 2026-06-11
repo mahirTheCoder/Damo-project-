@@ -1,5 +1,10 @@
 const { mailSender } = require("../helpers/mailService");
-const { generateOTP, isValidEmail } = require("../helpers/utils");
+const {
+  generateOTP,
+  isValidEmail,
+  generateAccessToken,
+  generateRefreshToken,
+} = require("../helpers/utils");
 const userSchema = require("../models/userSchema");
 
 // -----------signUp Controler
@@ -104,15 +109,39 @@ const reSendOtp = async (req, res) => {
   }
 };
 
+// ---------cookie configs
+const cookieConfig = {
+  httpOnly: true, // Prevents client-side JS/XSS attacks
+  secure: true, // Ensures cookie is sent only over HTTPS
+  maxAge: 1000 * 60 * 60 * 24 * 7, // Expires in 7 days (in milliseconds)
+};
 
-// ---------cookie configs 
- const cookieConfig = {
-   httpOnly: true,                 // Prevents client-side JS/XSS attacks
-   secure: true,                   // Ensures cookie is sent only over HTTPS
-   maxAge: 1000 * 60 * 60 * 24 * 7, // Expires in 7 days (in milliseconds)
-    };
+// ----------signIn controller
+const signIn = async (req, res) => {
+  const { email, password } = req.body;
 
+  try {
+    const user = await userSchema.findOne({ email }).select("+password");
 
-    
+    if (!user) {
+      return res.status(400).send("Invalid email or password");
+    }
 
-module.exports = { signUp, verifyOtp, reSendOtp };
+    // ------------comapre password
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(400).send("Invalid email or password");
+    }
+
+    // ------------access token refresh token pass
+    const accTkn = generateAccessToken(user);
+    const refTkn = generateRefreshToken(user);
+
+    res.status(200).cookie('accTkn', accTkn , cookieConfig).cookie('refTkn' , refTkn , cookieConfig).send('signIn Successfully')
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server error");
+  }
+};
+
+module.exports = { signUp, verifyOtp, reSendOtp, signIn };
