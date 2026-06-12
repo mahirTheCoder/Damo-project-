@@ -23,5 +23,5 @@ route.put(
   upload.single("avatar"),
   updateProfile,
 );
-
+      
 module.exports = route;
