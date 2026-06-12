@@ -1,2 +1,11 @@
 node_modules/
 .env
+
+
+# DB_URL= mongodb+srv://damo_project:zxp2nBriRDsn5vDZ@cluster0.mjewgzf.mongodb.net/damo_project?appName=Cluster0
+
+# JWT_SEC=kdfjdfhnjdhfkjdfh
+
+# cloud_name=db21zycb0
+# api_key=719945338933261
+# api_secret=ib6hKRYUnP1VsWYhRUlCCvWpAcc

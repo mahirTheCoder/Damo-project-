@@ -5,6 +5,8 @@ const {
   isValidEmail,
   generateAccessToken,
   generateRefreshToken,
+  uploadCloudinary,
+  destroyFromCloudinary,
 } = require("../helpers/utils");
 const userSchema = require("../models/userSchema");
 
@@ -173,9 +175,7 @@ const getProfile = async (req, res) => {
 // --------------update profile controller
 const updateProfile = async (req, res) => {
   const { fullname, address } = req.body;
-   const avatar = req.file;
-   console.log(req.body);
-console.log(req.file);
+  const avatar = req.file;
 
   try {
     const user = await userSchema.findOne({
@@ -196,6 +196,24 @@ console.log(req.file);
       user.address = address;
     }
 
+    if (avatar) {
+      try {
+        const avatarUrl = await uploadCloudinary({
+          mimetype: avatar.mimetype,
+          imgBuffer: avatar.buffer,
+        });
+
+        if(user.avatar) destroyFromCloudinary(user.avatar);
+         user.avatar = avatarUrl;
+
+        
+      } catch (error) {
+        console.log("Cloudinary upload error", error);
+        return res.status(500).send({ message: "Failed to upload avatar" });
+      }
+    }
+  console.log(avatar);
+
     await user.save();
 
     res.status(200).send({
@@ -210,4 +228,11 @@ console.log(req.file);
     });
   }
 };
-module.exports = { signUp, verifyOtp, reSendOtp, signIn, getProfile, updateProfile };
+module.exports = {
+  signUp,
+  verifyOtp,
+  reSendOtp,
+  signIn,
+  getProfile,
+  updateProfile,
+};

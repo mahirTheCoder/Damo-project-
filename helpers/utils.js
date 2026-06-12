@@ -40,13 +40,34 @@ const generateRefreshToken = (user) => {
 };
 
 // -----------upload cloudianry
-const uploadCloudinary = (mimetype, imgbuffer) => {
-  const dataUri = `data:${mimetype};base64,${imgbuffer.toString("base64")}`;
-  const res = cloudinary.uploader.opload(dataUri);
+// const uploadCloudinary = async (mimetype, imgBuffer) => {
+//   const dataUrl = `data:${mimetype};base64,${imgBuffer.toString("base64")}`;
+
+//   const res = await uploader.upload(dataUri);
+//   return res.secure_url;
+// };
+
+// -----------destroy from cloudinery
+// const destroyFromCloudinary = (url) => {
+//   const publicId = url.split("/").pop().split(".").shift();
+
+//   cloudinary.uploader.destroy(publicId, (error, result) => {
+//     if (error) {
+//       console.log("Destroy From Cloudinary:", error);
+//     }
+//   });
+// };
+
+// -----------upload cloudinary
+const uploadCloudinary = async (mimetype, imgBuffer) => {
+  const dataUrl = `data:${mimetype};base64,${imgBuffer.toString("base64")}`;
+
+  const res = await cloudinary.uploader.upload(dataUrl);
+
   return res.secure_url;
 };
 
-// -----------destroy from cloudinery
+// -----------destroy from cloudinary
 const destroyFromCloudinary = (url) => {
   const publicId = url.split("/").pop().split(".").shift();
 
@@ -57,11 +78,12 @@ const destroyFromCloudinary = (url) => {
   });
 };
 
+
 module.exports = {
   isValidEmail,
   generateOTP,
   generateAccessToken,
   generateRefreshToken,
   uploadCloudinary,
-  destroyFromCloudinary
+  destroyFromCloudinary,
 };
