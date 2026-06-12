@@ -144,4 +144,25 @@ const signIn = async (req, res) => {
   }
 };
 
+// -----------profile controller
+const getProfile = async (req, res) => {
+  try {
+    const profileData = await userSchema.findOne(
+      { _id: req.user._id },
+      { fullname: 1, email: 1, roll: 1, avatar: 1, address: 1 },
+    );
+    if (!profileData)
+      return res.status(400).send({ message: "Invalid request" });
+
+    res.status(200).send(profileData);
+  } catch (error) {
+    console.log("PROFILE ERROR:", error);
+
+    return res.status(500).send({
+      message: "Internal Server Error.",
+    });
+  }
+};
+
+
 module.exports = { signUp, verifyOtp, reSendOtp, signIn };
