@@ -59,7 +59,7 @@ const generateRefreshToken = (user) => {
 // };
 
 // -----------upload cloudinary
-const uploadCloudinary = async (mimetype, imgBuffer) => {
+const uploadCloudinary = async ({mimetype, imgBuffer}) => {
   const dataUrl = `data:${mimetype};base64,${imgBuffer.toString("base64")}`;
 
   const res = await cloudinary.uploader.upload(dataUrl);
