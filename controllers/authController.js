@@ -1,3 +1,4 @@
+const { request } = require("express");
 const { mailSender } = require("../helpers/mailService");
 const {
   generateOTP,
@@ -137,7 +138,11 @@ const signIn = async (req, res) => {
     const accTkn = generateAccessToken(user);
     const refTkn = generateRefreshToken(user);
 
-    res.status(200).cookie('accTkn', accTkn , cookieConfig).cookie('refTkn' , refTkn , cookieConfig).send('signIn Successfully')
+    res
+      .status(200)
+      .cookie("accTkn", accTkn, cookieConfig)
+      .cookie("refTkn", refTkn, cookieConfig)
+      .send("signIn Successfully");
   } catch (error) {
     console.log(error);
     res.status(500).send("Server error");
@@ -148,13 +153,12 @@ const signIn = async (req, res) => {
 const getProfile = async (req, res) => {
   try {
     const user = await userSchema.findOne(
-      { _id:req.user._id },
+      { _id: req.user._id },
       { fullname: 1, email: 1, role: 1, avatar: 1, address: 1 },
     );
 
-console.log(req.user);
-    if (!user)
-      return res.status(400).send({ message: "Invalid request" });
+    console.log(req.user);
+    if (!user) return res.status(400).send({ message: "Invalid request" });
 
     res.status(200).send(user);
   } catch (error) {
@@ -166,5 +170,44 @@ console.log(req.user);
   }
 };
 
+// --------------update profile controller
+const updateProfile = async (req, res) => {
+  const { fullname, address } = req.body;
+   const avatar = req.file;
+   console.log(req.body);
+console.log(req.file);
 
-module.exports = { signUp, verifyOtp, reSendOtp, signIn, getProfile };
+  try {
+    const user = await userSchema.findOne({
+      _id: req.user._id,
+    });
+
+    if (!user) {
+      return res.status(400).send({
+        message: "Invalid Request",
+      });
+    }
+
+    if (fullname?.trim()) {
+      user.fullname = fullname;
+    }
+
+    if (address?.trim()) {
+      user.address = address;
+    }
+
+    await user.save();
+
+    res.status(200).send({
+      message: "Profile Updated",
+      user,
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).send({
+      message: "Server Error",
+    });
+  }
+};
+module.exports = { signUp, verifyOtp, reSendOtp, signIn, getProfile, updateProfile };
