@@ -27,10 +27,10 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
+app.use(cookieParser())
 
 app.use(express.json());
 app.use(route);
-app.use(cookieParser)
 
 dbConfig();
 

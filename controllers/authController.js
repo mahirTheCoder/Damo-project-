@@ -147,14 +147,16 @@ const signIn = async (req, res) => {
 // -----------profile controller
 const getProfile = async (req, res) => {
   try {
-    const profileData = await userSchema.findOne(
-      { _id: req.user._id },
-      { fullname: 1, email: 1, roll: 1, avatar: 1, address: 1 },
+    const user = await userSchema.findOne(
+      { _id:req.user._id },
+      { fullname: 1, email: 1, role: 1, avatar: 1, address: 1 },
     );
-    if (!profileData)
+
+console.log(req.user);
+    if (!user)
       return res.status(400).send({ message: "Invalid request" });
 
-    res.status(200).send(profileData);
+    res.status(200).send(user);
   } catch (error) {
     console.log("PROFILE ERROR:", error);
 
@@ -165,4 +167,4 @@ const getProfile = async (req, res) => {
 };
 
 
-module.exports = { signUp, verifyOtp, reSendOtp, signIn };
+module.exports = { signUp, verifyOtp, reSendOtp, signIn, getProfile };
