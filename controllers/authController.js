@@ -156,7 +156,7 @@ const getProfile = async (req, res) => {
   try {
     const user = await userSchema.findOne(
       { _id: req.user._id },
-      { fullname: 1, email: 1, role: 1, avatar: 1, address: 1 },
+      { fullname: 1, email: 1, role: 1, avatar: 1, address: 1 }
     );
 
     console.log(req.user);
@@ -203,16 +203,14 @@ const updateProfile = async (req, res) => {
           imgBuffer: avatar.buffer,
         });
 
-        if(user.avatar) destroyFromCloudinary(user.avatar);
-         user.avatar = avatarUrl;
-
-        
+        if (user.avatar) destroyFromCloudinary(user.avatar);
+        user.avatar = avatarUrl;
       } catch (error) {
         console.log("Cloudinary upload error", error);
         return res.status(500).send({ message: "Failed to upload avatar" });
       }
     }
-  console.log(avatar);
+    console.log(avatar);
 
     await user.save();
 
@@ -228,6 +226,69 @@ const updateProfile = async (req, res) => {
     });
   }
 };
+
+
+// const userList = async (req, res) => {
+//   const { verified } = req.query || "";
+//   const { limit } = req.query || 10;
+//   const { page } = req.query || 1;
+
+//   // ----Pagination calculate
+//   const skip = limit * (page - 1);
+//   const filterQueries = {};
+
+//   if (verified && verified.toLowerCase() != "all") {
+//     filterQueries.isVerified = verified === "true";
+//   }
+
+//   try {
+//     const total = await userSchema.countDocuments();
+
+//     const users = await userSchema
+//       .find(filterQueries, {
+//         fullName: 1,
+//         email: 1,
+//         role: 1,
+//         avatar: 1,
+//         isVerified: 1,
+//       })
+//       .limit(limit)
+//       .skip(skip);
+//     const totalPage = total / limit;
+//     res.status(200).send({
+//       users,
+//       pagination: {
+//         limit,
+//         total,
+//         page,
+//         totalPage,
+//         hasNextpage: totalPage > page,
+//         hasPrevPage: totalPage < page,
+//       },
+//     });
+//   } catch (error) {
+//     console.log(error);
+
+//     res.status(500).send({
+//       message: "Server Error",
+//     });
+//   }
+// };
+
+const userList = async (req, res)=>{
+try {
+  const user = await userSchema.find({}, { fullname: 1, email: 1, role: 1, avatar: 1, isVerified: 1});
+  res.status(200).send(user)
+} catch (error) {
+      console.log(error);
+
+    res.status(500).send({
+      message: "Server Error",
+    });
+}
+
+}
+
 module.exports = {
   signUp,
   verifyOtp,
@@ -235,4 +296,5 @@ module.exports = {
   signIn,
   getProfile,
   updateProfile,
+  userList
 };

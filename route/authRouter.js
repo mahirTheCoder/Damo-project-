@@ -8,8 +8,9 @@ const {
   signIn,
   getProfile,
   updateProfile,
+  userList,
 } = require("../controllers/authController");
-const { authMiddleware } = require("../middleware/authMiddleware");
+const { authMiddleware, roleCheck  } = require("../middleware/authMiddleware");
 const route = express.Router();
 
 route.post("/signUp", signUp);
@@ -23,5 +24,6 @@ route.put(
   upload.single("avatar"),
   updateProfile,
 );
+route.get('/userList', authMiddleware, roleCheck(['admin', 'moderator']), userList)
       
 module.exports = route;
