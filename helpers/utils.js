@@ -1,7 +1,6 @@
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-const { cloudinary } = require("../configs/cloudinary");
-
+const cloudinary = require ('../configs/cloudinary')
 // --------email regex
 function isValidEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -39,24 +38,6 @@ const generateRefreshToken = (user) => {
   );
 };
 
-// -----------upload cloudianry
-// const uploadCloudinary = async (mimetype, imgBuffer) => {
-//   const dataUrl = `data:${mimetype};base64,${imgBuffer.toString("base64")}`;
-
-//   const res = await uploader.upload(dataUri);
-//   return res.secure_url;
-// };
-
-// -----------destroy from cloudinery
-// const destroyFromCloudinary = (url) => {
-//   const publicId = url.split("/").pop().split(".").shift();
-
-//   cloudinary.uploader.destroy(publicId, (error, result) => {
-//     if (error) {
-//       console.log("Destroy From Cloudinary:", error);
-//     }
-//   });
-// };
 
 // -----------upload cloudinary
 const uploadCloudinary = async ({mimetype, imgBuffer}) => {
